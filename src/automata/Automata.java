@@ -15,11 +15,11 @@ public class Automata {
   	this.alfabeto = alfabeto;
   }
 
-	public void setEstado_inicial(String estado_inicial) {
+	public void setEstadoInicial(String estado_inicial) {
   	this.estado_inicial = estado_inicial;
   }
 
-	public void setEstados_finales(String[] estados_finales) {
+	public void setEstadosFinales(String[] estados_finales) {
   	this.estados_finales = estados_finales;
   }
 
@@ -37,26 +37,25 @@ public class Automata {
 		this.transiciones[obtenerIndiceEstado(deEstado)][obtenerIndiceSimbolo(simbolo)] = aEstado;
 	}
 
-	public void setTransiciones(String[][] transiciones) { // Sacar
-  	this.transiciones = transiciones;
-  }
+	public String[] getAlfabeto() {
+		return this.alfabeto;
+	}
+
+	public String[] getEstados() {
+		return this.estados;
+	}
 
 	public boolean pertenece(String cadena) {
-		// if (this.validarAutomata())
-		// 	return false;
-
 		String s = "";
-
 		String estado_actual = this.estado_inicial;
 		for (char simbolo : cadena.toCharArray()) {
 			s = "" + simbolo;
 			System.out.print(estado_actual + ", " + simbolo + " -> ");
 			estado_actual = transicion(estado_actual, s);
-			// if (estado_actual == null)
-			// 	return false;
 			if (estado_actual.equals("Error"))
-				return false;
+				break;
 		}
+		System.out.println(estado_actual);
 		if (esFinal(estado_actual))
 			return true;
 		return false;
@@ -71,46 +70,49 @@ public class Automata {
 	}
 
 	private String transicion(String estado, String simbolo) {
-		int indice_estado = obtenerIndiceEstado(estado);
-		int indice_simbolo = obtenerIndiceSimbolo(simbolo);
-
-		if (indice_estado == -1 || indice_simbolo == -1)
+		int indice_estado, indice_simbolo;
+		if (!existeEstado(estado) || !existeSimbolo(simbolo))
 			return "Error";
 
+		indice_estado = obtenerIndiceEstado(estado);
+		indice_simbolo = obtenerIndiceSimbolo(simbolo);
+
 		return this.transiciones[indice_estado][indice_simbolo];
+	}
+
+	public boolean existeEstado(String estado) {
+		for (String e : this.estados) {
+			if (estado.equals(e))
+				return true;
+		}
+		return false;
+	}
+
+	public boolean existeSimbolo(String simbolo) {
+		for (String s : this.alfabeto) {
+			if (simbolo.equals(s))
+				return true;
+		}
+		return false;
 	}
 
 	private int obtenerIndiceEstado(String estado) {
 		int indice = 0;
 		for (String e : this.estados) {
 			if ( estado.equals(e) )
-				return indice;
+				break;
 			indice++;
 		}
-		return -1;
+		return indice;
 	}
 
 	private int obtenerIndiceSimbolo(String simbolo) {
 		int indice = 0;
 		for (String s : this.alfabeto) {
 			if (simbolo.equals(s))
-				return indice;
+				break;
 			indice++;
 		}
-		return -1;
-	}
-
-	private boolean validarAutomata() {
-		if (this.alfabeto == null)
-			return false;
-		if (this.estado_inicial == null)
-			return false;
-		if (this.estados_finales == null)
-			return false;
-		if (this.estados == null)
-			return false;
-		if (this.transiciones == null)
-			return false;
-		return true;
+		return indice;
 	}
 }
