@@ -33,8 +33,13 @@ public class Automata {
 		}
   }
 
-	public void setTransicion(String deEstado, String simbolo, String aEstado) {
+	public boolean setTransicion(String deEstado, String simbolo, String aEstado) {
+		if (!existeEstado(deEstado) || !existeEstado(aEstado))
+			return false;
+		if (!existeSimbolo(simbolo))
+			return false;
 		this.transiciones[obtenerIndiceEstado(deEstado)][obtenerIndiceSimbolo(simbolo)] = aEstado;
+		return true;
 	}
 
 	public String[] getAlfabeto() {
@@ -80,7 +85,7 @@ public class Automata {
 		return this.transiciones[indice_estado][indice_simbolo];
 	}
 
-	public boolean existeEstado(String estado) {
+	private boolean existeEstado(String estado) {
 		for (String e : this.estados) {
 			if (estado.equals(e))
 				return true;
@@ -88,7 +93,7 @@ public class Automata {
 		return false;
 	}
 
-	public boolean existeSimbolo(String simbolo) {
+	private boolean existeSimbolo(String simbolo) {
 		for (String s : this.alfabeto) {
 			if (simbolo.equals(s))
 				return true;

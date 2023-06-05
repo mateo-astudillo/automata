@@ -29,75 +29,62 @@ public class App {
 	}
 
 	private static void cargarAlfabeto(Automata automata, Scanner scanner) {
-		ArrayList<String> alfabeto = new ArrayList<String>();
 		String entrada = "";
+		String[] alfabeto;
 
-		System.out.println("Alfabeto\n(\"fin\" para terminar)");
-		while (true) {
-			System.out.print("Simbolo\n> ");
-			entrada = scanner.nextLine();
-			if (entrada.equalsIgnoreCase("fin"))
-				break;
-			alfabeto.add(entrada);
-		}
-		automata.setAlfabeto(alfabeto.toArray(new String[alfabeto.size()]));
+		System.out.print("Inserte los símbolos separados por un espacio\n> ");
+		entrada = scanner.nextLine();
+		alfabeto = entrada.split(" ");
+
+		automata.setAlfabeto(alfabeto);
 	}
 
 	private static void cargarEstados(Automata automata, Scanner scanner) {
 		String entrada = "";
-		String estado_auxiliar = "";
-		String estado_inicial = "";
-		ArrayList<String> estados = new ArrayList<String>();
+		String[] estados;
 		ArrayList<String> estados_finales = new ArrayList<String>();
 
-		System.out.print("Estado inicial\n> ");
-		estado_inicial = scanner.nextLine();
-		estados.add(estado_inicial);
-		System.out.print("Es final? (si o no)\n> ");
+		System.out.print("Inserte los estados separados por un espacio\n"
+			+ "El primero será considerado inicial\n> ");
 		entrada = scanner.nextLine();
-		if (entrada.equalsIgnoreCase("s") || entrada.equalsIgnoreCase("si"))
-			estados_finales.add(estado_inicial);
-
-		System.out.println("Estados\n(\"fin\" para terminar)");
-		while (true) {
-			System.out.print("Estado\n> ");
-			entrada = scanner.nextLine();
-			if (entrada.equalsIgnoreCase("fin"))
-				break;
-			estados.add(entrada);
-
-			System.out.print("Es final? (si o no)\n> ");
-			estado_auxiliar = entrada;
+		estados = entrada.split(" ");
+		for (String e : estados) {
+			System.out.print(e + " es final? (si o no)\n> ");
 			entrada = scanner.nextLine();
 			if (entrada.equalsIgnoreCase("s") || entrada.equalsIgnoreCase("si"))
-				estados_finales.add(estado_auxiliar);
+				estados_finales.add(e);
 		}
-
-		automata.setEstadoInicial(estado_inicial);
-		automata.setEstados(estados.toArray(new String[estados.size()]));
+		automata.setEstadoInicial(estados[0]);
+		automata.setEstados(estados);
 		automata.setEstadosFinales(estados_finales.toArray(new String[estados_finales.size()]));
+
 	}
 
 	private static void cargarTransiciones(Automata automata, Scanner scanner) {
+		String entrada = "";
 		String deEstado = "";
 		String simbolo = "";
 		String aEstado = "";
 		
-		System.out.println("Transiciones");
+		System.out.println("Transiciones\n(de estado) (simbolo) (a estado)");
 		while (true) {
-			System.out.print("de estado\n> ");
-			deEstado = scanner.nextLine();
-			System.out.print("simbolo\n> ");
-			simbolo = scanner.nextLine();
-			System.out.print("a estado\n> ");
-			aEstado = scanner.nextLine();
-			if (!automata.existeEstado(deEstado) || !automata.existeEstado(aEstado))
+			System.out.print("Transición\n> ");
+			entrada = scanner.nextLine();
+			try {
+				deEstado = entrada.split(" ")[0];
+				simbolo = entrada.split(" ")[1];
+				aEstado = entrada.split(" ")[2];
+				System.out.println(deEstado + " " + simbolo + " " + aEstado);
+			} catch (Exception e) {
+				System.out.println("Error al agregar transición\nEj: A 1 B");
 				continue;
-			if (!automata.existeSimbolo(simbolo))
-				continue;
-			automata.setTransicion(deEstado, simbolo, aEstado);
-			System.out.print("Terminar (si o no)\n> ");
-			if (scanner.nextLine().equalsIgnoreCase("si"))
+			}
+			if (!automata.setTransicion(deEstado, simbolo, aEstado))
+				System.out.print("No se agregó la transición");
+
+			System.out.print("Terminar? (si o no)\n> ");
+			entrada = scanner.nextLine();
+			if (entrada.equalsIgnoreCase("s") || entrada.equalsIgnoreCase("si"))
 				break;
 		}
 	}
